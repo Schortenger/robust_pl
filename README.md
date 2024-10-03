@@ -23,7 +23,7 @@ Our algorithm is based on [Generalized Policy Iteration using Tensor Train (TTPI
 ### Dependencies
 
 - Python version: 3.7 (Tested)
-- Create Anaconda environment:
+- Install necessary packages:
 
     ```pip install -r requirements.txt```
 
