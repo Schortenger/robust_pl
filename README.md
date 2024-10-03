@@ -31,11 +31,11 @@ Our algorithm is based on [Generalized Policy Iteration using Tensor Train (TTPI
 
 We utilize TTPI for parameter-augmented policy learning. To learn more about TTPI, please run the following tutorial as an example:
 
-            TTPI_example_pushing.ipynb
+           examples/TTPI_example_pushing.ipynb
 
 Based on TTPI, we augment the state space with parameters to learn parameter-augmented policies for **Push** and **Reorientation**. 
 
-The codes for training such policies are listed below. You can skip them by directly loading the pretrained models stored in the ```tt_models``` folder. 
+The codes for training such policies are listed below in ```examples```. You can skip them by directly loading the pretrained models stored in the ```tt_models``` folder. 
 
             PushingTask_policy_training.ipynb
 
@@ -45,6 +45,8 @@ Note: The parameter-augmented policy of **Hit** can be obtained analytically, as
 
 
 ### Paramter-conditioned Policy Retrieval through Domain Contraction
+
+In ```examples``` folder:
 
 
 **Hit:**
