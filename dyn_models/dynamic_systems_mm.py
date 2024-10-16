@@ -172,6 +172,65 @@ class PointMass:
 
 ################################################################################################################
 ################################################################################################################
+class MiniGlof:
+    '''
+        Dynamics of min-golf
+        state: (theta, dtheta) # (joinr_angle,joint_vel), joint_angle in (-pi, pi), it is 0 at the stable equilibrium
+        action: (u) # joint torquw
+    '''
+    def __init__(self, state_min, state_max, action_max, action_min, dt=0.01, w_scale=1.0, w_goal=0.9,w_action=0.1,device='cpu'):
+
+        self.g = 9.81
+        self.dt=dt
+
+        self.state_min = state_min
+        self.state_max = state_max # max of ()
+        self.action_max = action_max
+        self.action_min = action_min
+
+        w_total = w_goal+w_action
+        self.w_goal = w_goal/w_total
+        self.w_action = w_action/w_total
+
+        self.w_scale = w_scale
+        self.gamma = 0 #elasticity coefficient
+
+
+    def fwd_simulate(self, state_param,action):
+        '''
+        state: (x, y, vx, vy)
+        param: (mass, mu)
+        action: (a_x, a_y)
+        '''
+        state = state_param[:,:4]
+        param = state_param[:,4:]
+        mass = param[:,0].view(-1,1)
+        mu = param[:,1].view(-1,1)
+        position = state[:,:2]
+        velocity = state[:,2:]
+        action = torch.clip(action, self.action_min, self.action_max)
+
+        
+        acc = -mu*9.81*velocity/torch.linalg.norm(velocity,dim=-1).view(-1,1)
+        new_position = position + velocity*self.dt
+        # new_velocity = action/mass + velocity + acc*self.dt
+        new_velocity = action/mass + velocity + acc*self.dt
+        state_new = torch.cat((new_position, new_velocity),dim=-1)
+        state_new = torch.clip(state_new, self.state_min, self.state_max)
+        return torch.cat((state_new, param),dim=-1)
+
+    def reward_state_action(self,state_param,action):
+        state = state_param[:,:4]
+        position = state[:,:2]
+
+        r_goal = -1*(torch.linalg.norm(position,dim=-1)/0.01)**2 # -self.state_max[0]*10
+        r_action = -1* torch.linalg.norm(action,dim=-1)**2
+        return r_goal*100 #+ r_action*0.01
+        # return r_goal
+
+
+################################################################################################################
+################################################################################################################
 class Reorientation:
     '''
         Dynamics of a single pendulum
